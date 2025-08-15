@@ -2,7 +2,7 @@ import cv2 as cv
 import numpy as np
 
 # Cargar imagen y redimensionar
-img = cv.imread("dialisis2.jpg")
+img = cv.imread("dialisis4.jpg")
 img = cv.resize(img, (640, 480))
 
 # Convertir a gris y aplicar desenfoque
@@ -26,7 +26,7 @@ contornos, _ = cv.findContours(closed, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 for c in contornos:
     area = cv.contourArea(c)
     #print(f"Área detectada: {area}")
-    if area > 10000:  # regla simple
+    if area > 9100:  # regla simple
         x, y, w, h = cv.boundingRect(c)
         cv.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)  # dibujar contorno
         cv.putText(img, "OK", (x, y - 10), cv.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
