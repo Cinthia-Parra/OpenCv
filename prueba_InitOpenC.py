@@ -1,15 +1,15 @@
 import cv2 as cv
 import numpy as np
 
-# Paso 1: Cargar imagen y redimensionar
-img = cv.imread("dialisis.jpg")
+# Cargar imagen y redimensionar
+img = cv.imread("dialisis2.jpg")
 img = cv.resize(img, (640, 480))
 
-# Paso 2: Convertir a gris y aplicar desenfoque
+# Convertir a gris y aplicar desenfoque
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 blur = cv.GaussianBlur(gray, (5, 5), 0)
 
-# Paso 3: Detección de bordes
+# Detección de bordes
 edges = cv.Canny(blur, 50, 150)
 
 # Crear una matriz (kernel) de 5x5 con unos, tipo uint8
@@ -19,14 +19,14 @@ kernel = np.ones((5, 5), np.uint8)
 closed = cv.morphologyEx(edges, cv.MORPH_CLOSE, kernel)
 
 
-# Paso 4: Encontrar contornos
+# Encontrar contornos
 contornos, _ = cv.findContours(closed, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
-# Paso 5: Recorrer contornos encontrados
+# Recorrer contornos encontrados
 for c in contornos:
     area = cv.contourArea(c)
     #print(f"Área detectada: {area}")
-    if area > 500:  # regla simple
+    if area > 10000:  # regla simple
         x, y, w, h = cv.boundingRect(c)
         cv.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)  # dibujar contorno
         cv.putText(img, "OK", (x, y - 10), cv.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
