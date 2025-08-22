@@ -2,7 +2,7 @@ import cv2 as cv
 import numpy as np
 
 # Carga la imagen desde disco
-img = cv.imread('dialisis.jpg')  
+img = cv.imread('images/dialisis.jpg')  
 
 # Convierte a escala de grises para facilitar el procesamiento
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)

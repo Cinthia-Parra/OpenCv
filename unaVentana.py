@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-img = cv2.imread('dialisis.jpg')
+img = cv2.imread('images/dialisis.jpg')
 
 # Redimensionamos la base una sola vez
 base = cv2.resize(img, (640, 480))
