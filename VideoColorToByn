@@ -1,0 +1,33 @@
+import cv2 as cv
+import numpy as np
+
+cap = cv.VideoCapture(0)  # 0 = primera cámara (la integrada normalmente)  1, 2… = cámaras USB adicionales
+
+cap.set(cv.CAP_PROP_FRAME_WIDTH, 1280) #Pides una resolución (ancho) 
+cap.set(cv.CAP_PROP_FRAME_HEIGHT, 720) #(y alto).
+
+while True: #Inicia el bucle infinito para leer cuadros (frames) de la cámara en tiempo real.-la cámara me da imágenes sin parar hasta que yo decida salir
+    success, frame = cap.read() #success es True/False (Éxito) y frame es la imagen (una matriz NumPy de 720 filas × 1280 columnas × 3 colores BGR). 
+    if not success: #Si success=False, no hay imagen válida (cámara desconectada, error, etc.).
+        break #Sale del bucle si no se pudo leer. Evita crasheos.
+    
+        # 3) Convertir a escala de grises
+    gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+
+    # 4) Suavizar (Gaussian Blur) para reducir ruido
+    #    (5,5) es el tamaño del kernel: ventana de 5x5 píxeles (debe ser impar).
+    #    El '0' deja que OpenCV calcule sigma automáticamente.
+    blur = cv.GaussianBlur(gray, (5, 5), 0)
+
+    # 5) Visualizar lado a lado: gris | blur
+    gris_bgr = cv.cvtColor(gray, cv.COLOR_GRAY2BGR)  # se traatan para poder concatenarlas para que salgan en la misma ruta
+    blur_bgr = cv.cvtColor(blur, cv.COLOR_GRAY2BGR)
+    panel = cv.hconcat([gris_bgr, blur_bgr]) #se unen en un panel horizontal.S
+    
+    cv.imshow("Paso 2 - Gris | Blur (q para salir)", panel) #Se muestra ese panel en una sola ventana, aunque dentro hay varias imágenes distintas.
+    
+    if cv.waitKey(1) & 0xFF == ord('q'): #Espera 1 ms una tecla. Si presionas q, rompe el bucle y cierra.
+            break
+
+cap.release() #Libera la cámara (muy importante). Si no la sueltas, otros programas no podrán usarla.
+cv.destroyAllWindows() #Cierra todas las ventanas de OpenCV que estén abiertas.
