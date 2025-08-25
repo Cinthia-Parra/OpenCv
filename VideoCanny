@@ -6,8 +6,6 @@ cap = cv.VideoCapture(0)  # 0 = primera cámara (la integrada normalmente)  1, 2
 cap.set(cv.CAP_PROP_FRAME_WIDTH, 1280) #Pides una resolución (ancho) 
 cap.set(cv.CAP_PROP_FRAME_HEIGHT, 720) #(y alto).
 
-use_adaptive = False  # False = usa Canny | True = usa Adaptativo
-
 while True: #Inicia el bucle infinito para leer cuadros (frames) de la cámara en tiempo real.-la cámara me da imágenes sin parar hasta que yo decida salir
     success, frame = cap.read() 
     if not success:      #Si success=False, no hay imagen válida (cámara desconectada, error, etc.).

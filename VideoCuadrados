@@ -1,0 +1,60 @@
+import cv2 as cv
+import numpy as np
+
+cap = cv.VideoCapture(0)
+cap.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
+cap.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
+
+MIN_AREA = 800            # descarta cositas muy chicas
+EPS_FACTOR = 0.02         # 2% del perímetro para approxPolyDP (ajusta la “suavidad”)
+
+while True:
+    ok, frame = cap.read()
+    if not ok:
+        break
+
+    # --- Prepro: gris + blur ---
+    gray  = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    gray  = cv.GaussianBlur(gray, (5,5), 0)
+
+    # --- Bordes (Canny) + cerrar huecos ---
+    edges = cv.Canny(gray, 100, 220)
+    edges = cv.morphologyEx(edges, cv.MORPH_CLOSE,
+                            cv.getStructuringElement(cv.MORPH_RECT,(3,3)), 1)
+
+    # --- Buscar contornos externos ---
+    contours, _ = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+
+    # --- Copia para dibujar resultados ---
+    vis = frame.copy()
+
+    for c in contours:
+        area = cv.contourArea(c)
+        if area < MIN_AREA:            # 1) filtro por tamaño
+            continue
+
+        peri   = cv.arcLength(c, True)
+        approx = cv.approxPolyDP(c, EPS_FACTOR * peri, True)  # 2) simplificar contorno
+
+        # 3) Rectángulo básico: 4 vértices y convexo
+        if len(approx) == 4 and cv.isContourConvex(approx):
+            # Opcional: caja mínima girada (más estable que boundingRect)
+            rect = cv.minAreaRect(approx)                # ((cx,cy),(w,h),angle)
+            box  = cv.boxPoints(rect).astype(int)
+
+            # Dibujar
+            cv.drawContours(vis, [box], -1, (0,255,0), 2)
+            cx, cy = int(rect[0][0]), int(rect[0][1])
+            cv.circle(vis, (cx, cy), 3, (0,255,255), -1)
+            cv.putText(vis, f"Area:{int(area)} V:4",
+                    (cx-60, cy-10), cv.FONT_HERSHEY_SIMPLEX, 0.55, (20,20,20), 2)
+
+    # Mostrar: bordes (izq) | detecciones (der)
+    panel = cv.hconcat([cv.cvtColor(edges, cv.COLOR_GRAY2BGR), vis])
+    cv.imshow("Paso 4 - Bordes | Contornos (q para salir)", panel)
+
+    if cv.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv.destroyAllWindows()
