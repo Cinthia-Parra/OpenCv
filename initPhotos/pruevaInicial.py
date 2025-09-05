@@ -2,7 +2,7 @@ import cv2 as cv
 import numpy as np
 
 # Cargar imagen y redimensionar
-img = cv.imread("dialisis4.jpg")
+img = cv.imread("images/dialisis4.jpg")
 img = cv.resize(img, (640, 480))
 
 # Convertir a gris y aplicar desenfoque
